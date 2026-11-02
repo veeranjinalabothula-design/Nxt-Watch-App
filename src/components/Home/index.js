@@ -5,7 +5,7 @@ import {FaSearch} from 'react-icons/fa'
 import {IoClose} from 'react-icons/io5'
 
 import Header from '../Header'
-import Sidebar from '../Sidebar'
+import NavigationBar from '../NavigationBar'
 
 import {
   HomeContainer,
@@ -206,7 +206,7 @@ class Home extends Component {
       <HomeContainer>
         <Header />
         <MainContainer>
-          <Sidebar />
+          <NavigationBar />
           <div>
             {this.renderBanner()}
             <SearchContainer>
