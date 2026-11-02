@@ -6,6 +6,7 @@ import {IoClose} from 'react-icons/io5'
 
 import Header from '../Header'
 import NavigationBar from '../NavigationBar'
+import ThemeAndVideoContext from '../../context/ThemeAndVideoContext'
 
 import {
   HomeContainer,
@@ -20,6 +21,13 @@ import {
   SearchInput,
   SearchButton,
   VideosList,
+  VideoLink,
+  VideoCard,
+  ThumbnailImage,
+  VideoDetails,
+  ChannelLogo,
+  VideoTitle,
+  VideoViewsAndDate,
   FailureContainer,
   FailureImage,
   FailureHeading,
@@ -103,6 +111,15 @@ class Home extends Component {
     this.setState({showBanner: false})
   }
 
+  formatDate = dateString => {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ]
+    const date = new Date(dateString)
+    return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
+  }
+
   renderBanner = () => {
     const {showBanner} = this.state
     if (!showBanner) return null
@@ -174,11 +191,23 @@ class Home extends Component {
     return (
       <VideosList>
         {videosList.map(video => (
-          <li key={video.id}>
-            <img src={video.thumbnailUrl} alt="video thumbnail" />
-            <p>{video.title}</p>
-            <p>{video.channel.name}</p>
-          </li>
+          <VideoCard key={video.id}>
+            <VideoLink to={`/videos/${video.id}`}>
+              <ThumbnailImage src={video.thumbnailUrl} alt="video thumbnail" />
+              <VideoDetails>
+                <ChannelLogo
+                  src={video.channel.profileImageUrl}
+                  alt="channel logo"
+                />
+                <div>
+                  <VideoTitle>{video.title}</VideoTitle>
+                  <VideoViewsAndDate>
+                    {video.viewCount} views . {this.formatDate(video.publishedAt)}
+                  </VideoViewsAndDate>
+                </div>
+              </VideoDetails>
+            </VideoLink>
+          </VideoCard>
         ))}
       </VideosList>
     )
@@ -203,32 +232,41 @@ class Home extends Component {
     const {searchInput} = this.state
 
     return (
-      <HomeContainer>
-        <Header />
-        <MainContainer>
-          <NavigationBar />
-          <div>
-            {this.renderBanner()}
-            <SearchContainer>
-              <SearchInput
-                type="search"
-                value={searchInput}
-                onChange={this.onChangeSearchInput}
-                placeholder="Search"
-              />
-              <SearchButton
-                type="button"
-                data-testid="searchButton"
-                onClick={this.onSearch}
-                aria-label="search"
-              >
-                <FaSearch />
-              </SearchButton>
-            </SearchContainer>
-            {this.renderContent()}
-          </div>
-        </MainContainer>
-      </HomeContainer>
+      <ThemeAndVideoContext.Consumer>
+        {value => {
+          const {isDarkTheme} = value
+          const bgColor = isDarkTheme ? '#181818' : '#f9f9f9'
+
+          return (
+            <HomeContainer data-testid="home" bgColor={bgColor}>
+              <Header />
+              <MainContainer>
+                <NavigationBar />
+                <div>
+                  {this.renderBanner()}
+                  <SearchContainer>
+                    <SearchInput
+                      type="search"
+                      value={searchInput}
+                      onChange={this.onChangeSearchInput}
+                      placeholder="Search"
+                    />
+                    <SearchButton
+                      type="button"
+                      data-testid="searchButton"
+                      onClick={this.onSearch}
+                      aria-label="search"
+                    >
+                      <FaSearch />
+                    </SearchButton>
+                  </SearchContainer>
+                  {this.renderContent()}
+                </div>
+              </MainContainer>
+            </HomeContainer>
+          )
+        }}
+      </ThemeAndVideoContext.Consumer>
     )
   }
 }
