@@ -1,7 +1,9 @@
+import {Link} from 'react-router-dom'
 import styled from 'styled-components'
 
 export const HomeContainer = styled.div`
   min-height: 100vh;
+  background-color: ${props => props.bgColor};
 `
 
 export const MainContainer = styled.div`
@@ -12,9 +14,10 @@ export const Banner = styled.div`
   position: relative;
   min-height: 250px;
   padding: 30px;
-  background-color: #ffffff;
   display: flex;
   justify-content: space-between;
+  background-image: url('https://assets.ccbp.in/frontend/react-js/nxt-watch-banner-bg.png');
+  background-size: cover;
 `
 
 export const BannerContent = styled.div`
@@ -78,10 +81,38 @@ export const VideosList = styled.ul`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+`
 
-  img {
-    width: 100%;
-  }
+export const VideoLink = styled(Link)`
+  text-decoration: none;
+`
+
+export const VideoCard = styled.li`
+  list-style-type: none;
+`
+
+export const ThumbnailImage = styled.img`
+  width: 100%;
+`
+
+export const VideoDetails = styled.div`
+  display: flex;
+`
+
+export const ChannelLogo = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 40px;
+`
+
+export const VideoTitle = styled.p`
+  font-size: 16px;
+  color: #1e293b;
+`
+
+export const VideoViewsAndDate = styled.p`
+  font-size: 14px;
+  color: #475569;
 `
 
 export const FailureContainer = styled.div`
