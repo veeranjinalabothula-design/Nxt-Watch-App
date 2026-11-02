@@ -201,6 +201,7 @@ class Home extends Component {
                 />
                 <div>
                   <VideoTitle>{video.title}</VideoTitle>
+                  <VideoViewsAndDate>{video.channel.name}</VideoViewsAndDate>
                   <VideoViewsAndDate>
                     {video.viewCount} views . {this.formatDate(video.publishedAt)}
                   </VideoViewsAndDate>
