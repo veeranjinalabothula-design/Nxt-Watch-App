@@ -4,7 +4,6 @@ import {Route, Switch, Redirect} from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import Login from './components/Login'
 import Home from './components/Home'
-import VideoDetailView from './components/VideoDetailView'
 import TrendingVideos from './components/TrendingVideos'
 import GamingVideos from './components/GamingVideos'
 import VideoItemDetails from './components/VideoItemDetails'
@@ -17,13 +16,8 @@ import './App.css'
 
 class App extends Component {
   state = {
-    savedVideos: [],
     isDarkTheme: false,
-    activeTab: 'Home',
-  }
-
-  changeTab = tab => {
-    this.setState({activeTab: tab})
+    savedVideos: [],
   }
 
   toggleTheme = () => {
@@ -34,12 +28,14 @@ class App extends Component {
 
   addVideo = video => {
     const {savedVideos} = this.state
-    const index = savedVideos.findIndex(eachVideo => eachVideo.id === video.id)
-    if (index === -1) {
-      this.setState({savedVideos: [...savedVideos, video]})
+    const isVideoAlreadySaved = savedVideos.find(
+      eachVideo => eachVideo.id === video.id,
+    )
+
+    if (isVideoAlreadySaved) {
+      this.removeVideo(video.id)
     } else {
-      savedVideos.splice(index, 1)
-      this.setState({savedVideos})
+      this.setState({savedVideos: [...savedVideos, video]})
     }
   }
 
@@ -48,20 +44,21 @@ class App extends Component {
     const updatedSavedVideos = savedVideos.filter(
       eachVideo => eachVideo.id !== id,
     )
+
     this.setState({savedVideos: updatedSavedVideos})
   }
 
   render() {
-    const {savedVideos, isDarkTheme, activeTab} = this.state
+    const {isDarkTheme, savedVideos} = this.state
+
     return (
       <ThemeAndVideoContext.Provider
         value={{
-          savedVideos,
           isDarkTheme,
-          activeTab,
+          savedVideos,
           toggleTheme: this.toggleTheme,
           addVideo: this.addVideo,
-          changeTab: this.changeTab,
+          removeVideo: this.removeVideo,
         }}
       >
         <Switch>
@@ -70,14 +67,13 @@ class App extends Component {
           <ProtectedRoute
             exact
             path="/videos/:id"
-            component={VideoDetailView}
+            component={VideoItemDetails}
           />
           <ProtectedRoute exact path="/trending" component={TrendingVideos} />
           <ProtectedRoute exact path="/gaming" component={GamingVideos} />
           <ProtectedRoute exact path="/saved-videos" component={SavedVideos} />
-          <Route exact path="/videos/:id" component={VideoItemDetails} />
-          <Route path="/not-found" component={NotFound} />
-          <Redirect to="not-found" />
+          <Route exact path="/not-found" component={NotFound} />
+          <Redirect to="/not-found" />
         </Switch>
       </ThemeAndVideoContext.Provider>
     )
