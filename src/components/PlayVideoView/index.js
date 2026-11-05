@@ -1,133 +1,93 @@
+import {Component} from 'react'
 import ReactPlayer from 'react-player'
-
 import {AiOutlineLike, AiOutlineDislike} from 'react-icons/ai'
-import {BiListPlus} from 'react-icons/bi'
 
-import ThemeAndVideoContext from '../../context/ThemeAndVideoContext'
+import SaveButton from '../SaveButton'
 
 import {
-  VideoPlayer,
-  PlayVideoTitle,
-  PlayVideoStatus,
-  PlayVideoStatusContainer,
-  PlayVideoDot,
-  PlaySocialButtonsContainer,
-  SocialButton,
-  ButtonText,
-  HrLine,
-  ChannelImage,
+  VideoDetailsContainer,
+  Title,
+  VideoActions,
+  ActionButton,
   ChannelContainer,
-  ChannelInfo,
+  ChannelImage,
+  ChannelDetails,
   ChannelName,
   ChannelSubscribers,
-  ChannelDescription,
-  BtnContainer,
+  Description,
+  HorizontalLine,
 } from './styledComponents'
 
-const PlayVideoView = props => {
-  const {videoDetails, isLiked, isDisLiked, clickLiked, clickDisLiked} = props
-
-  const onClickLike = () => {
-    clickLiked()
+class PlayVideoView extends Component {
+  state = {
+    isLiked: false,
+    isDisLiked: false,
   }
 
-  const onClickDislike = () => {
-    clickDisLiked()
+  onClickLike = () => {
+    this.setState(prevState => ({
+      isLiked: !prevState.isLiked,
+      isDisLiked: false,
+    }))
   }
 
-  return (
-    <ThemeAndVideoContext.Consumer>
-      {value => {
-        const {isDarkTheme, addVideo, savedVideos} = value
-        const textColor = isDarkTheme ? '#64748b' : '#231f20'
-        const likeIconColor = isLiked ? '#2563eb' : '#64748b'
-        const dislikeIconColor = isDisLiked ? '#2563eb' : '#64748b'
+  onClickDislike = () => {
+    this.setState(prevState => ({
+      isDisLiked: !prevState.isDisLiked,
+      isLiked: false,
+    }))
+  }
 
-        let isSaved
-        const index = savedVideos.findIndex(
-          eachVideo => eachVideo.id === videoDetails.id,
-        )
-        if (index === -1) {
-          isSaved = false
-        } else {
-          isSaved = true
-        }
+  render() {
+    const {videoDetails} = this.props
+    const {isLiked, isDisLiked} = this.state
 
-        const saveIconColor = isSaved ? '#2563eb' : textColor
+    const { title, videoUrl, viewCount, publishedAt, description, channel} =
+      videoDetails
 
-        const onClickSave = () => {
-          addVideo(videoDetails)
-        }
+    const {name, profileImageUrl, subscriberCount} = channel
 
-        return (
-          <VideoPlayer>
-            <ReactPlayer url={videoDetails.videoUrl} controls width="100%" />
-            <PlayVideoTitle color={textColor}>
-              {videoDetails.title}
-            </PlayVideoTitle>
-            <PlayVideoStatusContainer>
-              <PlayVideoStatus color={textColor}>
-                {videoDetails.viewCount} views
-                <PlayVideoDot> &#8226; </PlayVideoDot>
-                {videoDetails.publishedAt}
-              </PlayVideoStatus>
-              <PlaySocialButtonsContainer>
-                <BtnContainer>
-                  <SocialButton
-                    type="button"
-                    color={likeIconColor}
-                    style={{color: likeIconColor}}
-                    onClick={onClickLike}
-                  >
-                    <AiOutlineLike size={25} />
-                    <ButtonText>Like</ButtonText>
-                  </SocialButton>
-                </BtnContainer>
-                <BtnContainer>
-                  <SocialButton
-                    type="button"
-                    color={dislikeIconColor}
-                    style={{color: dislikeIconColor}}
-                    onClick={onClickDislike}
-                  >
-                    <AiOutlineDislike size={25} />
-                    <ButtonText>Dislike</ButtonText>
-                  </SocialButton>
-                </BtnContainer>
-                <BtnContainer>
-                  <SocialButton
-                    type="button"
-                    color={saveIconColor}
-                    style={{color: saveIconColor}}
-                    onClick={onClickSave}
-                  >
-                    <BiListPlus size={25} />
-                    <ButtonText>{isSaved ? 'Saved' : 'Save'}</ButtonText>
-                  </SocialButton>
-                </BtnContainer>
-              </PlaySocialButtonsContainer>
-            </PlayVideoStatusContainer>
-            <HrLine />
-            <ChannelContainer>
-              <ChannelImage
-                src={videoDetails.profileImageUrl}
-                alt="channel logo"
-              />
-              <ChannelInfo>
-                <ChannelName color={textColor}>{videoDetails.name}</ChannelName>
-                <ChannelSubscribers color={textColor}>
-                  {videoDetails.subscriberCount} Subscribers
-                </ChannelSubscribers>
-                <ChannelDescription color={textColor}>
-                  {videoDetails.description}
-                </ChannelDescription>
-              </ChannelInfo>
-            </ChannelContainer>
-          </VideoPlayer>
-        )
-      }}
-    </ThemeAndVideoContext.Consumer>
-  )
+    return (
+      <VideoDetailsContainer data-testid="videoItemDetails">
+        <ReactPlayer url={videoUrl} controls width="100%" height="100%" />
+        <Title>{title}</Title>
+        <VideoActions>
+          <p>{viewCount} views</p>
+          <p>{publishedAt}</p>
+        </VideoActions>
+        <div className="action-buttons-container">
+          <ActionButton
+            type="button"
+            style={{color: isLiked ? '#2563eb' : '#64748b'}}
+            onClick={this.onClickLike}
+          >
+            <AiOutlineLike size={25} />
+            Like
+          </ActionButton>
+          <ActionButton
+            type="button"
+            style={{color: isDisLiked ? '#2563eb' : '#64748b'}}
+            onClick={this.onClickDislike}
+          >
+            <AiOutlineDislike size={25} />
+            Dislike
+          </ActionButton>
+          <SaveButton videoDetails={videoDetails} />
+        </div>
+        <HorizontalLine />
+        <ChannelContainer>
+          <ChannelImage src={profileImageUrl} alt="channel logo" />
+          <ChannelDetails>
+            <ChannelName>{name}</ChannelName>
+            <ChannelSubscribers>
+              {subscriberCount} subscribers
+            </ChannelSubscribers>
+          </ChannelDetails>
+        </ChannelContainer>
+        <Description>{description}</Description>
+      </VideoDetailsContainer>
+    )
+  }
 }
 
 export default PlayVideoView
